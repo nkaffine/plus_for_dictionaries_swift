@@ -9,11 +9,16 @@ import Foundation
 
 extension Dictionary
 {
+    //Enum for custom dictionary errors
     enum DictionaryError: Error
     {
         case duplicateKey(key: Key, values: (Value, Value))
     }
 
+    //Helper method for +
+    //Takes in a dictionary and uses reduce to add all the values from
+    //the given dictionary to self, throwing a duplicateKey exception if
+    //there are any duplicate keys
     func combine(with dictionary: [Key: Value]) throws -> [Key: Value]
     {
         do
@@ -36,8 +41,14 @@ extension Dictionary
         }
     }
 
+    //+ function
+    //Takes in two dictionaries with the same Key Value types
+    //Returns a new dictionary with key value pairs of both dictionaries
+    //Throws duplicateKey exception if there is a duplicate key
     static func + (lhs: [Key: Value], rhs: [Key: Value]) throws -> [Key: Value]
     {
+        //Always appending the smaller dictionary to the larger dictionary
+        //only increases speed by a constant factor.
         if lhs.count > rhs.count
         {
             do
