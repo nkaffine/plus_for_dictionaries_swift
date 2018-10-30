@@ -14,7 +14,7 @@ extension Dictionary
     {
         case duplicateKey(key: Key, values: (Value, Value))
     }
-
+    
     //Helper method for +
     //Takes in a dictionary and uses reduce to add all the values from
     //the given dictionary to self, throwing a duplicateKey exception if
@@ -31,8 +31,7 @@ extension Dictionary
                     throw DictionaryError.duplicateKey(key: key, values: (value1, keyValuePair.value))
                 }
                 //Already checked that there are no duplicates so the uniquingKeysWith closure will never be called
-                let temp = [keyValuePair.key: keyValuePair.value]
-                return partialResults.merging(temp, uniquingKeysWith: { first,_ in return first})
+                return partialResults.merging([keyValuePair.key: keyValuePair.value], uniquingKeysWith: { first,_ in return first})
             }
         }
         catch DictionaryError.duplicateKey(let key, let values)
@@ -40,7 +39,7 @@ extension Dictionary
             throw DictionaryError.duplicateKey(key: key, values: values)
         }
     }
-
+    
     //+ function
     //Takes in two dictionaries with the same Key Value types
     //Returns a new dictionary with key value pairs of both dictionaries
@@ -49,27 +48,13 @@ extension Dictionary
     {
         //Always appending the smaller dictionary to the larger dictionary
         //only increases speed by a constant factor.
-        if lhs.count > rhs.count
+        do
         {
-            do
-            {
-                return try lhs.combine(with: rhs)
-            }
-            catch DictionaryError.duplicateKey(let key, let values)
-            {
-                throw DictionaryError.duplicateKey(key: key, values: values)
-            }
+            return try lhs.count > rhs.count ? lhs.combine(with: rhs) : rhs.combine(with: lhs)
         }
-        else
+        catch DictionaryError.duplicateKey(let key, let values)
         {
-            do
-            {
-                return try rhs.combine(with: lhs)
-            }
-            catch DictionaryError.duplicateKey(let key, let values)
-            {
-                throw DictionaryError.duplicateKey(key: key, values: values)
-            }
+            throw DictionaryError.duplicateKey(key: key, values: values)
         }
     }
 }
